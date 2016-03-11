@@ -83,11 +83,8 @@ int parse_file(char* path, name_time_t* result) {
 
   fclose(fp);
 
-  if (line)
-    free(line);
-
   result->name = path;
-  result->timestamp = NULL; 
+  result->timestamp = 0; 
 
   return 1;
 }
