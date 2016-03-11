@@ -4,8 +4,5 @@
 #include "normfile.h"
 
 int main(int argc, char *argv[]) {
-	struct utimbuf times;
-	times.actime = time(NULL);
-	times.modtime = time(NULL) - 3600;
-	doit("test/foo", "test/bar", &times);
+	doit("test/foo", "test/bar", time(NULL) - 3600);
 }
