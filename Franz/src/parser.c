@@ -15,7 +15,7 @@ int parse_file(char* path, name_time_t* result) {
   FILE* fp = fopen(path, "r");
   
   if (!fp) {
-    /*printf("failed to open file!\n");*/
+    fprintf(stderr, "failed to open file!\n");
     return 0;
   }
 
@@ -26,12 +26,12 @@ int parse_file(char* path, name_time_t* result) {
   read = getline(&line, &len, fp);
 
   if (read == -1) {
-    /*printf("file is empty!\n");*/
+    fprintf(stderr, "file is empty!\n");
     return 0;
   }
 
   if (line[0] != 'A' && len != 7) {
-    /*printf("file seems not to conform IGC standard!\n");*/
+    fprintf(stderr, "file seems not to conform IGC standard!\n");
     return 0;
   }
 
@@ -40,53 +40,35 @@ int parse_file(char* path, name_time_t* result) {
   strcpy(dn, path);
   char *dir_name = dirname(dn);
 
-  /*printf("found header: %s", line);*/
- 
   char manufacturer[4] = {0};
   strncpy(manufacturer, line+1, 3);
   
-  /*printf("found manufacturer '%s'\n", manufacturer);*/
-
   char serial_number[4] = {0};
   strncpy(serial_number, line+4, 3);
   
-  /*printf("found serial number '%s'\n", serial_number);*/
-
   char flight_count[] = "00"; /* 2 digits, zero padding!*/
 
   char suffix[4] = {0};
 
   strncpy(suffix, filename+(strlen(filename)-3), 3);/**/
 
-  /*printf("found suffix '%s'\n", suffix);*/
-
-  unsigned char c = filename[(strlen(filename)-5)];
-  /*printf("found flightcount '%c'\n", c);*/
-  sprintf(flight_count, "%02d", c - '0');
-
-  char year_str[3] = {0};
-  char month_str[3] = {0};
-  char day_str[3] = {0};
   char date_str[255];
 
   while ((read = getline(&line, &len, fp)) != -1) {
-    /*printf("found header: %s", line);*/
     if (strncmp("HFDTE", line, 5) == 0) {
       struct tm tm_struct;
       memset(&tm_struct, 0, sizeof(struct tm));
-      strptime(line+5, "%d%m%y", &tm_struct);
-      tm_struct.tm_hour = 11;
       setenv("TZ", "");
+      strptime(line+5, "%y%m%d", &tm_struct);
+      tm_struct.tm_isdst = -1;
+      tm_struct.tm_hour = 12;
       result->timestamp = mktime(&tm_struct);
-      
-      printf("year %d month %d day %d\n", tm_struct.tm_year, tm_struct.tm_mon, tm_struct.tm_mday);
       strftime(date_str, sizeof(date_str), "%Y-%m-%d", &tm_struct);
-      puts(date_str);
-      printf("timestamp %d\n", result->timestamp);/**/
+      break;
     }
 
     if (line[0] != 'H') {
-      /*printf("we are done reading the header.\n");*/
+      fprintf(stderr, "we are done reading the header.\n");
       break;
     }
   }
