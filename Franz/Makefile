@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I./include -ansi
+CFLAGS=-I./include -ansi -g
 
 franz: src/parser.o
 	$(CC) -o franz src/parser.o
