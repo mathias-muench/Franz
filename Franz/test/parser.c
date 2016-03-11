@@ -30,6 +30,24 @@ int test_parser_should_not_return_null_on_valid_path() {
   return result != 0;
 }
 
+int test_parser_should_return_correct_filename() {
+  name_time_t* input = malloc(sizeof(name_time_t));
+  printf("input: size %d\n", sizeof(input));
+
+  int result = parse_file("test/igc/58cd1vj1.igc", input);
+
+  return 0;/*strcmp(input.name, "test/igc/58cd1vj1.igc") == 0;*/
+}
+
+int test_parser_should_return_correct_time() {
+  name_time_t* input = malloc(sizeof(name_time_t));
+  int result = parse_file("test/igc/58cd1vj1.igc", input);
+
+  return result != 0;
+}
+
+  
+
 int main(char** argv, int argc) {
   int result;
 
@@ -54,6 +72,12 @@ int main(char** argv, int argc) {
   result = test_parser_should_return_null_on_invalid_file();
   printf(
     "parser should return null on invalid file: %s\n",
+    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+  
+  result = test_parser_should_return_correct_filename();
+  printf(
+    "parser should return correct filename: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 }
