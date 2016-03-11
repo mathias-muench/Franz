@@ -8,6 +8,6 @@ typedef struct {
 	time_t timestamp;
 } name_time_t;
 
-void parse_file(char* filename, name_time_t* result);
+int parse_file(char* filename, name_time_t* result);
 
 #endif /* INC_PARSER_H_ */
