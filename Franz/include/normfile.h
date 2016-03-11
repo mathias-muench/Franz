@@ -1,4 +1,6 @@
 #ifndef NORMFILE_H
 #define NORMFILE_H
-void doit();
+#include <utime.h>
+
+void doit(const char *filename, const struct utimbuf *times);
 #endif

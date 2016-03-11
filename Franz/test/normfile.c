@@ -3,5 +3,5 @@
 #include "normfile.h"
 
 int main(int argc, char *argv[]) {
-	doit();
+	doit("test/foo", NULL);
 }
