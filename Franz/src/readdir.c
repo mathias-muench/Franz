@@ -31,7 +31,7 @@ void read_current_dir(void (* callback)(char *))
                 if (result)
                 {
                     printf("Error getting stats of file: %s\n", dir->d_name);
-                    perror("stat");
+                    perror("lstat");
                     continue;
                 }
                 if (S_ISREG(file_stat.st_mode))
@@ -50,13 +50,14 @@ void read_current_dir(void (* callback)(char *))
                         if (result)
                         {
                             printf("Error changing to \"..\"\n");
+                            perror("chdir");
                             exit(1);
                         }
                     }
                     else
                     {
+                        perror("chdir");
                         printf("Failed to enter DIR: %s\n", dir->d_name);
-                        perror("stat");
                     }
                 }
             }
