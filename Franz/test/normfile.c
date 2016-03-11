@@ -4,5 +4,5 @@
 #include "normfile.h"
 
 int main(int argc, char *argv[]) {
-	doit("test/foo", "test/bar", time(NULL) - 3600);
+	normfile("test/foo", "test/bar", time(NULL) - 3600);
 }
