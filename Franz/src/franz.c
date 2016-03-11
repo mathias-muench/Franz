@@ -4,14 +4,16 @@
 
 #include "readdir.h"
 #include "normfile.h"
+#include "parser.h"
 
 void doit(char *filename)
 {
     char new_filename[FILENAME_MAX];
+    name_time_t result;
+    result.name = new_filename;
 
-    strcpy(new_filename, filename);
-    strcat(new_filename, "+");
-    normfile(filename, new_filename, time(NULL) - 3600);
+    parse_file(filename, &result);
+    normfile(filename, result.name, time(NULL) - 3600);
     printf("FILE: %s\n", filename);
 }
 

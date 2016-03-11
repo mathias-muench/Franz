@@ -32,18 +32,17 @@ int test_parser_should_not_return_null_on_valid_path() {
 
 int test_parser_should_return_correct_filename() {
   name_time_t* input = malloc(sizeof(name_time_t));
-  printf("input: size %ld\n", sizeof(input));
-
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-
-  return strcmp(input->name, "test/igc/58cd1vj1.igc") == 0;
+  char* expected = "test/igc/2012-08-15-FLA-1VJ-00.igc";
+  puts(input->name);
+  return strcmp(input->name, expected) == 0;
 }
 
 int test_parser_should_return_correct_time() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-  time_t expected = 0;
-  return input->timestamp =! expected;
+  time_t expected = 1345024800;
+  return input->timestamp == expected;
 }
 
   
