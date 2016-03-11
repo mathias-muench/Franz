@@ -1,11 +1,15 @@
 #include "parser.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
 #include <libgen.h>
 
 int parse_file(char* path, name_time_t* result) {
   printf("opening file %s\n", path);
+
+  char fn[FILENAME_MAX];
+  char dn[FILENAME_MAX];
 
   FILE* fp = fopen(path, "r");
   
@@ -30,8 +34,10 @@ int parse_file(char* path, name_time_t* result) {
     return 0;
   }
 
-  char* filename = basename(path);
-  char* dir = dirname(path);
+  strcpy(fn, path);
+  char *filename = basename(fn);
+  strcpy(dn, path);
+  char *dirname = basename(dn);
 
   printf("found header: %s", line);
  
@@ -79,8 +85,9 @@ int parse_file(char* path, name_time_t* result) {
   if (line)
     free(line);
 
-  result->name = path;
-  result->timestamp = NULL; 
+  strcpy(result->name, path);
+  strcat(result->name, "+");
+  result->timestamp = 0; 
 
   return 1;
 }
