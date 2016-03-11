@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I./include -ansi -g
 
-franz: src/parser.o src/franz.o
+franz: src/parser.o src/franz.o src/normfile.o src/readdir.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test: test/parser
