@@ -13,7 +13,7 @@ void doit(char *filename)
     result.name = new_filename;
 
     parse_file(filename, &result);
-    normfile(filename, result.name, time(NULL) - 3600);
+    normfile(filename, result.name, result.timestamp);
     printf("FILE: %s\n", filename);
 }
 

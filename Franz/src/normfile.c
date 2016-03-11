@@ -12,7 +12,7 @@ void normfile(const char *old_filename, const char *new_filename, time_t mtime) 
 	rename(old_filename, new_filename);
 	perror("rename");
 	times.actime = time(NULL);
-	times.modtime = time(NULL) - 3600;
+	times.modtime = mtime;
 	utime(new_filename, &times);
 	perror("utime");
 }
