@@ -1,4 +1,5 @@
 #include "parser.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <string.h>
@@ -30,8 +31,14 @@ int parse_file(char* path, name_time_t* result) {
     return 0;
   }
 
-  char* filename = basename(path);
-  char* dir = dirname(path);
+  char path1[1024];
+  char path2[1024];
+
+  strcpy(path1, path);
+  strcpy(path2, path);
+
+  char* filename = basename(path1);
+  char* dir = dirname(path2);
 
   printf("found header: %s", line);
  
