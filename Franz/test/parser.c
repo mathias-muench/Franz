@@ -32,52 +32,58 @@ int test_parser_should_not_return_null_on_valid_path() {
 
 int test_parser_should_return_correct_filename() {
   name_time_t* input = malloc(sizeof(name_time_t));
-  printf("input: size %d\n", sizeof(input));
+  printf("input: size %ld\n", sizeof(input));
 
   int result = parse_file("test/igc/58cd1vj1.igc", input);
 
-  return 0;/*strcmp(input.name, "test/igc/58cd1vj1.igc") == 0;*/
+  return strcmp(input->name, "test/igc/58cd1vj1.igc") == 0;
 }
 
 int test_parser_should_return_correct_time() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-
-  return result != 0;
+  time_t expected = 0;
+  return input->timestamp =! expected;
 }
 
   
 
 int main(char** argv, int argc) {
-  int result;
+  int result = 0;
 
-  result = test_parser_should_return_null_on_invalid_path();
+  result = test_parser_should_return_null_on_invalid_path();/**/
   printf(
-    "parser should return null on invalid path : %s\n",
+    "\x1b[36m[TEST]\x1b[0m parser should return null on invalid path : %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_not_return_null_on_valid_path();
+  result = test_parser_should_not_return_null_on_valid_path();/**/
   printf(
-    "parser should not return null on valid path : %s\n",
+    "\x1b[36m[TEST]\x1b[0m parser should not return null on valid path : %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_return_null_on_empty_file();
+  result = test_parser_should_return_null_on_empty_file();/**/
   printf(
-    "parser should return null on empty file: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parser should return null on empty file: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_return_null_on_invalid_file();
+  result = test_parser_should_return_null_on_invalid_file();/**/
   printf(
-    "parser should return null on invalid file: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parser should return null on invalid file: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_return_correct_filename();
+  result = test_parser_should_return_correct_filename();/**/
   printf(
-    "parser should return correct filename: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parser should return correct filename: %s\n",
+    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+
+  result = test_parser_should_return_correct_time();/**/
+  printf(
+    "\x1b[36m[TEST]\x1b[0m parser should return correct time: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 }
