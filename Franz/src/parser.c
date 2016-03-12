@@ -70,7 +70,7 @@ int parse_file(char* path, name_time_t* result) {
     if (strncmp("HFDTE", line, 5) == 0) {
       struct tm tm_struct;
       memset(&tm_struct, 0, sizeof(struct tm));
-      strptime(line+5, "%y%m%d", &tm_struct);
+      strptime(line+5, "%d%m%y", &tm_struct);
       tm_struct.tm_hour = 11;
       result->timestamp = mktime(&tm_struct);
       
@@ -94,7 +94,7 @@ int parse_file(char* path, name_time_t* result) {
   char new_path[255];
   char* flight_counter = "00";
   sprintf(new_path, "%s/%s-%s-%s-%s.%s", dir_name, date_str, manufacturer, serial_number, flight_counter, suffix);
-  result->name = new_path;
+  strcpy(result->name, new_path);
 
   return 1;
 }

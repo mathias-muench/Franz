@@ -33,7 +33,7 @@ int test_parser_should_not_return_null_on_valid_path() {
 int test_parser_should_return_correct_filename() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-  char* expected = "test/igc/2012-08-15-FLA-1VJ-00.igc";
+  char* expected = "test/igc/2015-08-12-FLA-1VJ-00.igc";
   puts(input->name);
   return strcmp(input->name, expected) == 0;
 }

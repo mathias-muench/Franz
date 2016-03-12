@@ -1,10 +1,11 @@
 #ifndef INC_PARSER_H_
 #define INC_PARSER_H_
 
+#include <stdio.h>
 #include <sys/types.h>
 
 typedef struct {
-	char* name;
+	char name[FILENAME_MAX];
 	time_t timestamp;
 } name_time_t;
 

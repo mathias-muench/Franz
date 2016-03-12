@@ -10,7 +10,6 @@ void doit(char *filename)
 {
     char new_filename[FILENAME_MAX];
     name_time_t result;
-    result.name = new_filename;
 
     parse_file(filename, &result);
     normfile(filename, result.name, result.timestamp);
