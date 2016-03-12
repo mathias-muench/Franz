@@ -60,6 +60,10 @@ int parse_file(char* path, name_time_t* result) {
 
   /*printf("found suffix '%s'\n", suffix);*/
 
+  unsigned char c = filename[(strlen(filename)-5)];
+  /*printf("found flightcount '%c'\n", c);*/
+  sprintf(flight_count, "%02d", c - '0');
+
   char year_str[3] = {0};
   char month_str[3] = {0};
   char day_str[3] = {0};
@@ -72,6 +76,7 @@ int parse_file(char* path, name_time_t* result) {
       memset(&tm_struct, 0, sizeof(struct tm));
       strptime(line+5, "%d%m%y", &tm_struct);
       tm_struct.tm_hour = 11;
+      setenv("TZ", "");
       result->timestamp = mktime(&tm_struct);
       
       printf("year %d month %d day %d\n", tm_struct.tm_year, tm_struct.tm_mon, tm_struct.tm_mday);
@@ -92,8 +97,7 @@ int parse_file(char* path, name_time_t* result) {
     free(line);
 
   char new_path[255];
-  char* flight_counter = "00";
-  sprintf(new_path, "%s/%s-%s-%s-%s.%s", dir_name, date_str, manufacturer, serial_number, flight_counter, suffix);
+  sprintf(new_path, "%s/%s-%s-%s-%s.%s", dir_name, date_str, manufacturer, serial_number, flight_count, suffix);
   strcpy(result->name, new_path);
 
   return 1;

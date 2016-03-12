@@ -33,7 +33,7 @@ int test_parser_should_not_return_null_on_valid_path() {
 int test_parser_should_return_correct_filename() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-  char* expected = "test/igc/2015-08-12-FLA-1VJ-00.igc";
+  char* expected = "test/igc/2015-08-12-FLA-1VJ-01.igc";
   puts(input->name);
   return strcmp(input->name, expected) == 0;
 }
@@ -41,7 +41,7 @@ int test_parser_should_return_correct_filename() {
 int test_parser_should_return_correct_time() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-  time_t expected = 1345024800;
+  time_t expected = 1439377200;
   return input->timestamp == expected;
 }
 
@@ -85,4 +85,6 @@ int main(char** argv, int argc) {
     "\x1b[36m[TEST]\x1b[0m parser should return correct time: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
+
+  exit(0);
 }
