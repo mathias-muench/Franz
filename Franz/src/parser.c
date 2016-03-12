@@ -7,11 +7,6 @@
 #include <time.h>
 
 int parse_file(char* path, name_time_t* result) {
-  /*printf("opening file %s\n", path);*/
-
-  char fn[FILENAME_MAX];
-  char dn[FILENAME_MAX];
-
   FILE* fp = fopen(path, "r");
   
   if (!fp) {
@@ -35,10 +30,8 @@ int parse_file(char* path, name_time_t* result) {
     return 0;
   }
 
-  strcpy(fn, path);
-  char *filename = basename(fn);
-  strcpy(dn, path);
-  char *dir_name = dirname(dn);
+  path_tokens_t tokens = {.filename=NULL, .dirname=NULL, .suffix=NULL};
+  split_path(path, &tokens);
 
   char manufacturer[4] = {0};
   strncpy(manufacturer, line+1, 3);
@@ -47,10 +40,6 @@ int parse_file(char* path, name_time_t* result) {
   strncpy(serial_number, line+4, 3);
   
   char flight_count[] = "00"; /* 2 digits, zero padding!*/
-
-  char suffix[4] = {0};
-
-  strncpy(suffix, filename+(strlen(filename)-3), 3);/**/
 
   char date_str[255];
 
@@ -72,16 +61,52 @@ int parse_file(char* path, name_time_t* result) {
       break;
     }
   }
+  
+  char* flight_counter = "00";
 
   fclose(fp);
 
   if (line)
     free(line);
 
-  char new_path[255];
-  sprintf(new_path, "%s/%s-%s-%s-%s.%s", dir_name, date_str, manufacturer, serial_number, flight_count, suffix);
-  strcpy(result->name, new_path);
+  char new_path[FILENAME_MAX] = {0};
 
+  sprintf(
+    new_path,
+    "%s/%s-%s-%s-%s.%s",
+    tokens.dirname,
+    date_str,
+    manufacturer,
+    serial_number,
+    flight_counter,
+    tokens.suffix
+  );
+
+  result->name = new_path;
+  
   return 1;
 }
 
+int fnotd_char_to_int(char fnotd) {
+  if (fnotd < 65) {
+    return (int) (fnotd - 48);
+  } else {
+    return (int) (fnotd - 55);
+  }
+}
+
+path_tokens_t* split_path(char* path, path_tokens_t* tokens) {
+  char buffer[FILENAME_MAX];
+
+  strcpy(buffer, path);
+  tokens->filename = basename(buffer);
+  strcpy(buffer, path);
+  tokens->dirname = dirname(buffer);
+  char* pos_dot = strrchr(tokens->filename, '.');
+  tokens->suffix = pos_dot+1;
+  *pos_dot = 0;/**/
+  pos_dot--;
+  tokens->flight_number_of_the_day = fnotd_char_to_int(*pos_dot);
+  
+  return tokens;
+}

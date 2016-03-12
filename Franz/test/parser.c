@@ -1,90 +1,115 @@
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-int test_parser_should_return_null_on_invalid_path() {
+int test_parse_file_should_return_null_on_invalid_path() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("file_does_not_exist", input);
 
   return result == 0;
 }
 
-int test_parser_should_return_null_on_empty_file() {
+int test_parse_file_should_return_null_on_empty_file() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/empty", input);
 
   return result == 0;
 }
 
-int test_parser_should_return_null_on_invalid_file() {
+int test_parse_file_should_return_null_on_invalid_file() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/invalid", input);
 
   return result == 0;
 }
 
-int test_parser_should_not_return_null_on_valid_path() {
+int test_parse_file_should_not_return_null_on_valid_path() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
 
   return result != 0;
 }
 
-int test_parser_should_return_correct_filename() {
+int test_parse_file_should_return_correct_filename() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-  char* expected = "test/igc/2015-08-12-FLA-1VJ-01.igc";
-  puts(input->name);
+  /*printf("actual: %s\n", input->name);/**/
+  char* expected = "test/igc/2012-08-15-FLA-1VJ-00.igc";
+  /*printf("actual: %s, expected: %s", input->name, expected);/**/
+  
   return strcmp(input->name, expected) == 0;
 }
 
-int test_parser_should_return_correct_time() {
+int test_parse_file_should_return_correct_time() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test/igc/58cd1vj1.igc", input);
-  time_t expected = 1439377200;
+  struct tm tm_struct = {
+    .tm_year = 112,
+    .tm_mon = 7,
+    .tm_mday = 15,
+    .tm_hour = 12,/**/
+    .tm_isdst = -1
+  };
+  time_t expected = mktime(&tm_struct);
+
   return input->timestamp == expected;
 }
 
-  
+int test_split_path_should_return_correct_tokens() {
+  path_tokens_t tokens = {NULL, NULL, NULL};
+  split_path("test/igc/58cd1vjC.igc", &tokens);
+
+  return strcmp(tokens.dirname, "test/igc") == 0
+	  && strcmp(tokens.filename, "58cd1vjC") == 0
+          && tokens.flight_number_of_the_day  == 12
+	  && strcmp(tokens.suffix, "igc") == 0;
+}
 
 int main(char** argv, int argc) {
   int result = 0;
 
-  result = test_parser_should_return_null_on_invalid_path();/**/
+  result = test_parse_file_should_return_null_on_invalid_path();/**/
   printf(
-    "\x1b[36m[TEST]\x1b[0m parser should return null on invalid path : %s\n",
+    "\x1b[36m[TEST]\x1b[0m parse_file should return null on invalid path : %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_not_return_null_on_valid_path();/**/
+  result = test_parse_file_should_not_return_null_on_valid_path();/**/
   printf(
-    "\x1b[36m[TEST]\x1b[0m parser should not return null on valid path : %s\n",
+    "\x1b[36m[TEST]\x1b[0m parse_file should not return null on valid path : %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_return_null_on_empty_file();/**/
+  result = test_parse_file_should_return_null_on_empty_file();/**/
   printf(
-    "\x1b[36m[TEST]\x1b[0m parser should return null on empty file: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parse_file should return null on empty file: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_return_null_on_invalid_file();/**/
+  result = test_parse_file_should_return_null_on_invalid_file();/**/
   printf(
-    "\x1b[36m[TEST]\x1b[0m parser should return null on invalid file: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parse_file should return null on invalid file: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parser_should_return_correct_filename();/**/
+  result = test_parse_file_should_return_correct_filename();/**/
   printf(
-    "\x1b[36m[TEST]\x1b[0m parser should return correct filename: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parse_file should return correct filename: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 
-  result = test_parser_should_return_correct_time();/**/
+  result = test_parse_file_should_return_correct_time();/**/
   printf(
-    "\x1b[36m[TEST]\x1b[0m parser should return correct time: %s\n",
+    "\x1b[36m[TEST]\x1b[0m parse_file should return correct time: %s\n",
     (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 
-  exit(0);
+  result = test_split_path_should_return_correct_tokens();/**/
+  printf(
+    "\x1b[36m[TEST]\x1b[0m split_path should return correct tokens: %s\n",
+    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+
+  return 0;
 }
