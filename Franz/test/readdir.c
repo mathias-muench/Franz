@@ -3,18 +3,62 @@
 
 #include "readdir.h"
 
-void test(char *filename)
+void test_callback(char *filename)
 {
     printf("FILE: %s\n", filename);
 }
 
-int main(int argc, char** argv) {
-    if (argc < 2)
-    {
-        printf("Parameter directory missing.\n");
-        exit(1);
-    }
-    printf ("Reading entries of %s\n\n", argv[1]);
+int test_read_dir_should_return_false_on_invalid_path() {
+  int result = read_dir("test/not/existing/folder", test_callback);
 
-    read_dir(argv[1], test);
+  return result != 0;
 }
+
+int test_read_dir_should_return_false_on_file() {
+  int result = read_dir("test/testdir/dir/file1", test_callback);
+
+  return result != 0;
+}
+
+int test_read_dir_should_not_return_false_on_directory() {
+  int result = read_dir("test/testdir/dir", test_callback);
+
+  return result == 0;
+}
+
+int test_read_dir_should_not_return_false_on_nested_directories() {
+  int result = read_dir("test/testdir", test_callback);
+
+  return result == 0;
+}
+
+int main(int argc, char** argv) {
+  int success = 0;
+
+  success = test_read_dir_should_return_false_on_invalid_path();/**/
+  printf(
+    "\x1b[36m[TEST]\x1b[0m read_dir should return false on invalid path: %s\n",
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+
+  success = test_read_dir_should_return_false_on_file();/**/
+  printf(
+    "\x1b[36m[TEST]\x1b[0m read_dir should return false on file: %s\n",
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+
+  success = test_read_dir_should_not_return_false_on_directory();/**/
+  printf(
+    "\x1b[36m[TEST]\x1b[0m read_dir should not return false on directory: %s\n",
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+
+  success = test_read_dir_should_not_return_false_on_nested_directories();/**/
+  printf(
+    "\x1b[36m[TEST]\x1b[0m read_dir should not return false on nested directories: %s\n",
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+  );
+
+  return 0;
+}
+

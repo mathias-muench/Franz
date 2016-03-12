@@ -8,13 +8,28 @@
 
 #include "readdir.h"
 
-void read_dir(char *dir, void (* callback)(char *))
+int read_dir(char *dir, void (* callback)(char *))
 {
-    chdir(dir);
-    read_current_dir(callback);
+  int result = 0;
+
+  char buf[FILENAME_MAX];
+  getcwd(buf, FILENAME_MAX);
+
+  if (!chdir(dir)) {
+    printf("Enter DIR: %s\n", dir);
+    result = read_current_dir(callback);
+    chdir(buf);
+
+  } else {
+    fprintf(stderr, "Failed to enter DIR: %s\n", dir);
+    perror("chdir");
+    result = 1;
+  }
+
+  return result;
 }
 
-void read_current_dir(void (* callback)(char *))
+int read_current_dir(void (* callback)(char *))
 {
     DIR *d;
     struct dirent *dir;
@@ -48,40 +63,49 @@ void read_current_dir(void (* callback)(char *))
         char *current_entry = directory_entries + FILENAME_MAX * i * sizeof(char);
         if (current_entry[0] != '.')
         {
-            result = lstat(current_entry, &file_stat);
-            if (result)
+          result = lstat(current_entry, &file_stat);
+          if (result)
+          {
+            fprintf(stderr, "Error getting stats of file: %s\n", current_entry);
+            perror("lstat");
+            continue;
+          }
+          if (S_ISREG(file_stat.st_mode))
+          {
+            char resolved_path[FILENAME_MAX];
+            realpath(current_entry, resolved_path);
+            callback(resolved_path);
+          }
+          else if (S_ISDIR(file_stat.st_mode))
+          {
+            result = chdir(current_entry);
+            if(!result)
             {
-                printf("Error getting stats of file: %s\n", current_entry);
-                perror("lstat");
-                continue;
+              read_current_dir(callback);
+              result = chdir("..");
+              if (result)
+              {
+                fprintf(stderr, "Error changing to \"..\"\n");
+                perror("chdir");
+                return 1;
+              }
             }
-            if (S_ISREG(file_stat.st_mode))
+            else
             {
-                char resolved_path[FILENAME_MAX];
-                realpath(current_entry, resolved_path);
-                callback(resolved_path);
-            }
-            else if (S_ISDIR(file_stat.st_mode))
-            {
-                result = chdir(current_entry);
-                if(!result)
-                {
-                    read_current_dir(callback);
-                    result = chdir("..");
-                    if (result)
-                    {
-                        printf("Error changing to \"..\"\n");
-                        perror("chdir");
-                        exit(1);
-                    }
-                }
-                else
-                {
-                    perror("chdir");
-                    printf("Failed to enter DIR: %s\n", dir->d_name);
-                }
-            }
+              fprintf(stderr, "Failed to enter DIR: %s\n", current_entry);
+                perror("chdir");
+                return 1;
+          }
         }
+        else
+        {
+          perror("chdir");
+          printf("Failed to enter DIR: %s\n", dir->d_name);
+        }
+      }
     }
-    free(directory_entries);
+  }
+  free(directory_entries);
+
+  return 0;
 }
