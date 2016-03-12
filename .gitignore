@@ -1,0 +1,7 @@
+*.o
+*.swp
+test/normfile
+test/readdir
+test/parser
+franz
+
