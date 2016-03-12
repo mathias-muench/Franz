@@ -67,48 +67,48 @@ int test_split_path_should_return_correct_tokens() {
 }
 
 int main(char** argv, int argc) {
-  int result = 0;
+  int success = 0;
 
-  result = test_parse_file_should_return_null_on_invalid_path();/**/
+  success = test_parse_file_should_return_null_on_invalid_path();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m parse_file should return null on invalid path : %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parse_file_should_not_return_null_on_valid_path();/**/
+  success = test_parse_file_should_not_return_null_on_valid_path();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m parse_file should not return null on valid path : %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parse_file_should_return_null_on_empty_file();/**/
+  success = test_parse_file_should_return_null_on_empty_file();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m parse_file should return null on empty file: %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parse_file_should_return_null_on_invalid_file();/**/
+  success = test_parse_file_should_return_null_on_invalid_file();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m parse_file should return null on invalid file: %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
   
-  result = test_parse_file_should_return_correct_filename();/**/
+  success = test_parse_file_should_return_correct_filename();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m parse_file should return correct filename: %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 
-  result = test_parse_file_should_return_correct_time();/**/
+  success = test_parse_file_should_return_correct_time();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m parse_file should return correct time: %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 
-  result = test_split_path_should_return_correct_tokens();/**/
+  success = test_split_path_should_return_correct_tokens();/**/
   printf(
     "\x1b[36m[TEST]\x1b[0m split_path should return correct tokens: %s\n",
-    (result ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
+    (success ? "\x1b[32mOK\x1b[0m" : "\x1b[31mFAIL\x1b[0m")
   );
 
   return 0;
