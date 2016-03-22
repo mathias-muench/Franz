@@ -1,7 +1,7 @@
 *.o
 *.swp
-test/normfile
-test/readdir
-test/parser
+test_normfile
+test_readdir
+test_parser
 franz
 

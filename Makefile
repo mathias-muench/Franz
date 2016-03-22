@@ -1,22 +1,22 @@
 CC=gcc
-CFLAGS=-I./include -ansi -g
+CFLAGS=-ansi -g
 
-.PHONY: test/parser test/readdir test/normfile
+.PHONY: test_parser test_readdir test_normfile
 
 
-franz: src/parser.o src/franz.o src/normfile.o src/readdir.o
+franz: parser.o franz.o normfile.o readdir.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test: test/parser test/readdir test/normfile
-	@test/parser 2>/dev/null
-	#@test/normfile 2>/dev/null
-	@test/readdir test/testdir 2>/dev/null
+test: test_parser test_readdir test_normfile
+	./test_parser
+	#./test_normfile
+	./test_readdir
 
-test/parser: src/parser.o test/parser.o
+test_parser: parser.o test_parser.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test/normfile: src/normfile.o test/normfile.o
+test_normfile: normfile.o test_normfile.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test/readdir: src/readdir.o test/readdir.o
+test_readdir: readdir.o test_readdir.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
