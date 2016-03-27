@@ -38,7 +38,7 @@ int parse_file_should_return_correct_filename() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test_igc/58cd1vj1.igc", input);
   /*printf("actual: %s\n", input->name);/**/
-  char* expected = "test_igc/2012-08-15-FLA-1VJ-00.igc";
+  char* expected = "test_igc/2015-08-12-FLA-1VJ-00.igc";
   /*printf("actual: %s, expected: %s", input->name, expected);/**/
   
   return strcmp(input->name, expected) == 0;
@@ -48,9 +48,9 @@ int parse_file_should_return_correct_time() {
   name_time_t* input = malloc(sizeof(name_time_t));
   int result = parse_file("test_igc/58cd1vj1.igc", input);
   struct tm tm_struct = {
-    .tm_year = 112,
+    .tm_year = 115,
     .tm_mon = 7,
-    .tm_mday = 15,
+    .tm_mday = 12,
     .tm_hour = 12,/**/
     .tm_isdst = -1
   };

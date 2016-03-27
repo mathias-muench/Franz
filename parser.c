@@ -50,7 +50,7 @@ int parse_file(char* path, name_time_t* result) {
       struct tm tm_struct;
       memset(&tm_struct, 0, sizeof(struct tm));
       setenv("TZ", "");
-      strptime(line+5, "%y%m%d", &tm_struct);
+      strptime(line+5, "%d%m%y", &tm_struct);
       tm_struct.tm_isdst = -1;
       tm_struct.tm_hour = 12;
       result->timestamp = mktime(&tm_struct);
