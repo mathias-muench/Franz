@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-ansi -g
+CFLAGS=-ansi -g -Wwrite-strings
 
 .PHONY: test_parser test_readdir test_normfile
 

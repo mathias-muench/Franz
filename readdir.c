@@ -8,7 +8,7 @@
 
 #include "readdir.h"
 
-int read_dir(char *dir, void (* callback)(char *))
+int read_dir(const char *dir, void (* callback)(char *))
 {
   int result = 0;
 
@@ -62,17 +62,23 @@ int read_current_dir(void (* callback)(char *))
     char *current_entry = directory_entries + FILENAME_MAX * i * sizeof(char);
     if (current_entry[0] != '.')
     {
+#ifdef __MINGW32__
+      result = stat(current_entry, &file_stat);
+#else
       result = lstat(current_entry, &file_stat);
+#endif
       if (result)
       {
         fprintf(stderr, "Error getting stats of file: %s\n", current_entry);
-        perror("lstat");
+        perror("stat");
         continue;
       }
       if (S_ISREG(file_stat.st_mode))
       {
         char resolved_path[FILENAME_MAX];
-        realpath(current_entry, resolved_path);
+	getcwd(resolved_path, FILENAME_MAX);
+	strcat(resolved_path, "/");
+	strcat(resolved_path, current_entry);
         callback(resolved_path);
       }
       else if (S_ISDIR(file_stat.st_mode))

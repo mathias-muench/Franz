@@ -8,7 +8,7 @@
 
 #define MAX_IGC_RECORD_LEN 79
 
-int parse_file(char* path, name_time_t* result) {
+int parse_file(const char *path, name_time_t* result) {
   FILE* fp = fopen(path, "r");
   
   if (!fp) {
@@ -31,8 +31,10 @@ int parse_file(char* path, name_time_t* result) {
     return 0;
   }
 
-  path_tokens_t tokens = {.filename=NULL, .dirname=NULL, .suffix=NULL};
-  split_path(path, &tokens);
+  char buffer[FILENAME_MAX];
+  strcpy(buffer, path);
+  path_tokens_t tokens;
+  split_path(buffer, &tokens);
 
   char manufacturer[4] = {0};
   strncpy(manufacturer, line+1, 3);
@@ -40,8 +42,6 @@ int parse_file(char* path, name_time_t* result) {
   char serial_number[4] = {0};
   strncpy(serial_number, line+4, 3);
   
-  char flight_count[] = "00"; /* 2 digits, zero padding!*/
-
   char date_str[255];
 
   while (fgets(line, MAX_IGC_RECORD_LEN, fp)) {
@@ -68,25 +68,19 @@ int parse_file(char* path, name_time_t* result) {
     }
   }
   
-  char* flight_counter = "00";
-
   fclose(fp);
 
-  char new_path[FILENAME_MAX] = {0};
-
   sprintf(
-    new_path,
-    "%s/%s-%s-%s-%s.%s",
+    result->name,
+    "%s/%s-%s-%s-%02d.%s",
     tokens.dirname,
     date_str,
     manufacturer,
     serial_number,
-    flight_counter,
+    tokens.flight_number_of_the_day,
     tokens.suffix
   );
 
-  result->name = new_path;
-  
   return 1;
 }
 
@@ -98,18 +92,17 @@ int fnotd_char_to_int(char fnotd) {
   }
 }
 
-path_tokens_t* split_path(char* path, path_tokens_t* tokens) {
-  char buffer[FILENAME_MAX];
+path_tokens_t* split_path(char *path, path_tokens_t* tokens) {
+  char *pos_dot = strrchr(path, '.');
+  tokens->suffix = pos_dot + 1;
+  *pos_dot = '\0';
 
-  strcpy(buffer, path);
-  tokens->filename = basename(buffer);
-  strcpy(buffer, path);
-  tokens->dirname = dirname(buffer);
-  char* pos_dot = strrchr(tokens->filename, '.');
-  tokens->suffix = pos_dot+1;
-  *pos_dot = 0;/**/
-  pos_dot--;
-  tokens->flight_number_of_the_day = fnotd_char_to_int(*pos_dot);
+  tokens->flight_number_of_the_day = fnotd_char_to_int(*(pos_dot - 1));
+
+  char *pos_slash = strrchr(path, '/');
+  tokens->filename = pos_slash + 1;
+  *pos_slash = '\0';
+  tokens->dirname = path;
   
   return tokens;
 }
