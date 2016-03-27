@@ -6,6 +6,8 @@
 #include <libgen.h>
 #include <time.h>
 
+#define MAX_IGC_RECORD_LEN 79
+
 int parse_file(char* path, name_time_t* result) {
   FILE* fp = fopen(path, "r");
   
@@ -14,18 +16,17 @@ int parse_file(char* path, name_time_t* result) {
     return 0;
   }
 
-  char* line = NULL;
-  size_t len = 0;
-  ssize_t read;
+  char line[MAX_IGC_RECORD_LEN];
+  char *read;
  
-  read = getline(&line, &len, fp);
+  read = fgets(line, MAX_IGC_RECORD_LEN, fp);
 
-  if (read == -1) {
+  if (!read) {
     fprintf(stderr, "file is empty!\n");
     return 0;
   }
 
-  if (line[0] != 'A' && len != 7) {
+  if (line[0] != 'A' || strlen(line) < 7) {
     fprintf(stderr, "file seems not to conform IGC standard!\n");
     return 0;
   }
@@ -43,7 +44,8 @@ int parse_file(char* path, name_time_t* result) {
 
   char date_str[255];
 
-  while ((read = getline(&line, &len, fp)) != -1) {
+  while (fgets(line, MAX_IGC_RECORD_LEN, fp)) {
+    line[strcspn(line, "\r\n")] = '\0';
     if (strncmp("HFDTE", line, 5) == 0) {
       struct tm tm_struct;
       memset(&tm_struct, 0, sizeof(struct tm));
@@ -65,9 +67,6 @@ int parse_file(char* path, name_time_t* result) {
   char* flight_counter = "00";
 
   fclose(fp);
-
-  if (line)
-    free(line);
 
   char new_path[FILENAME_MAX] = {0};
 

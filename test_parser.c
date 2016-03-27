@@ -28,7 +28,7 @@ int parse_file_should_return_null_on_invalid_file() {
 }
 
 int parse_file_should_not_return_null_on_valid_path() {
-  name_time_t* input = malloc(sizeof(name_time_t));
+  name_time_t *input[sizeof(name_time_t)];
   int result = parse_file("test_igc/58cd1vj1.igc", input);
 
   return result != 0;
