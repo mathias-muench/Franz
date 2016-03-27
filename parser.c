@@ -47,10 +47,14 @@ int parse_file(char* path, name_time_t* result) {
   while (fgets(line, MAX_IGC_RECORD_LEN, fp)) {
     line[strcspn(line, "\r\n")] = '\0';
     if (strncmp("HFDTE", line, 5) == 0) {
+      int day, month, year;
       struct tm tm_struct;
       memset(&tm_struct, 0, sizeof(struct tm));
-      setenv("TZ", "");
-      strptime(line+5, "%d%m%y", &tm_struct);
+      putenv("TZ=");
+      sscanf(line+5, "%02d%02d%02d", &day, &month, &year);
+      tm_struct.tm_year = year < 80 ? year + 100 : year;
+      tm_struct.tm_mon = month - 1;
+      tm_struct.tm_mday = day;
       tm_struct.tm_isdst = -1;
       tm_struct.tm_hour = 12;
       result->timestamp = mktime(&tm_struct);
