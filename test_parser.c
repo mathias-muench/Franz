@@ -28,7 +28,7 @@ int parse_file_should_return_null_on_invalid_file() {
 }
 
 int parse_file_should_not_return_null_on_valid_path() {
-  name_time_t *input[sizeof(name_time_t)];
+  name_time_t input[sizeof(name_time_t)];
   int result = parse_file("test_igc/58cd1vj1.igc", input);
 
   return result != 0;
@@ -60,7 +60,7 @@ int parse_file_should_return_correct_time() {
 }
 
 int split_path_should_return_correct_tokens() {
-  path_tokens_t tokens = {NULL, NULL, NULL};
+  path_tokens_t tokens = {NULL, NULL, 0, NULL};
   split_path("test_igc/58cd1vjC.igc", &tokens);
 
   return strcmp(tokens.dirname, "test_igc") == 0
