@@ -50,14 +50,13 @@ struct a_record {
 struct a_record *parse_a_record(struct a_record *record, const char *line)
 {
 	assert(line[0] == 'A');
+	int result;
 
-	if (strlen(line) < 7) {
-		fprintf(stderr, "file seems not to conform IGC standard!\n");
-		return NULL;
+	result = sscanf(line, "A%3s%3s", record->manufacturer, record->serial_number);
+
+	if (result != 2) {
+		record = NULL;
 	}
-
-	strncpy(record->manufacturer, line + 1, 3);
-	strncpy(record->serial_number, line + 4, 3);
 
 	return record;
 }
@@ -88,6 +87,10 @@ int parse_file(const char *path, name_time_t * result)
 
 	struct a_record a_recordS, *a_record = &a_recordS;
 	a_record = parse_a_record(a_record, line);
+	if (!a_record) {
+		fprintf(stderr, "file seems not to conform IGC standard!\n");
+		return 0;
+	}
 
 	char date_str[255];
 
