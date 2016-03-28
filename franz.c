@@ -1,3 +1,4 @@
+#ifndef UNIT_TEST
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,3 +27,8 @@ int main(int argc, char** argv) {
 
     read_dir(argv[1], doit);
 }
+#else
+int main(int c, char *v) {
+	return 0;
+}
+#endif
