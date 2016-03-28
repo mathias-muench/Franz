@@ -6,15 +6,22 @@
 
 #include "normfile.h"
 
-void normfile(const char *old_filename, const char *new_filename, time_t mtime) {
+void normfile (const char *old_filename, const char *new_filename, time_t mtime)
+{
 	struct utimbuf times;
 
-	rename(old_filename, new_filename);
-	perror("rename");
-	times.actime = time(NULL);
+	rename (old_filename, new_filename);
+	if (errno) {
+		perror ("rename");
+		abort();
+	}
+	times.actime = time (NULL);
 	times.modtime = mtime;
-	utime(new_filename, &times);
-	perror("utime");
+	utime (new_filename, &times);
+	if (errno) {
+		perror ("utime");
+		abort();
+	}
 }
 
 #ifdef UNIT_TEST
@@ -23,7 +30,14 @@ void normfile(const char *old_filename, const char *new_filename, time_t mtime) 
 
 #include "normfile.h"
 
-int main(int argc, char *argv[]) {
-	normfile("test/foo", "test/bar", time(NULL) - 3600);
+int main (int argc, char *argv[])
+{
+#if 0
+	normfile ("test/foo", "test/bar", time (NULL) - 3600);
+#endif
+	exit(0);
 }
 #endif
+
+/* vi:ai:ts=4:sw=4
+*/
