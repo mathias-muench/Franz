@@ -47,12 +47,37 @@ struct a_record {
 	char serial_number[4];
 };
 
+char *int2base36(unsigned int n, char *buf)
+{
+	static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUFWXYZ";
+
+	char *b = buf + 4;
+	*--b = 0;
+
+	do {
+		if (b == buf)
+			return NULL;
+
+		*--b = digits[n % 36];
+		n /= 36;
+	} while (n);
+
+	return b;
+}
+
 struct a_record *parse_a_record(struct a_record *record, const char *line)
 {
 	assert(line[0] == 'A');
+
 	int result;
 
-	result = sscanf(line, "A%3s%3s", record->manufacturer, record->serial_number);
+	char sn[6];
+	result = sscanf(line, "A%3s%5[0-9]", record->manufacturer, sn);
+	if (result == 2 && strlen(sn) == 5) {
+		int2base36(atoi(sn), record->serial_number);
+	} else {
+		result = sscanf(line, "A%3s%3s", record->manufacturer, record->serial_number);
+	}
 
 	if (result != 2) {
 		record = NULL;
@@ -217,7 +242,7 @@ int split_path_should_return_correct_tokens()
 		&& strcmp(tokens.suffix, "igc") == 0;
 }
 
-int parse_A_with_three_char_serial_number()
+int parse_a_record_with_three_char_serial_number()
 {
 	struct a_record recordS, *record = &recordS;
 
@@ -225,6 +250,16 @@ int parse_A_with_three_char_serial_number()
 
 	return (strcmp(record->manufacturer, "FLA") == 0
 			&& strcmp(record->serial_number, "1VJ") == 0);
+}
+
+int parse_a_record_with_five_digit_serial_number()
+{
+	struct a_record recordS, *record = &recordS;
+
+	record = parse_a_record(record, "AFIL10258");
+
+	return (strcmp(record->manufacturer, "FIL") == 0
+			&& strcmp(record->serial_number, "7WY") == 0);
 }
 
 int main(char **argv, int argc)
@@ -236,7 +271,8 @@ int main(char **argv, int argc)
 	run_test(parse_file_should_return_correct_filename);
 	run_test(parse_file_should_return_correct_time);
 	run_test(split_path_should_return_correct_tokens);
-	run_test(parse_A_with_three_char_serial_number);
+	run_test(parse_a_record_with_three_char_serial_number);
+	run_test(parse_a_record_with_five_digit_serial_number);
 	exit(!test_result());
 }
 #endif
