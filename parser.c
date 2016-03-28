@@ -47,7 +47,8 @@ struct a_record {
 	char serial_number[4];
 };
 
-struct a_record *parse_a_record(struct a_record *record, const char *line) {
+struct a_record *parse_a_record(struct a_record *record, const char *line)
+{
 	assert(line[0] == 'A');
 
 	if (strlen(line) < 7) {
@@ -127,8 +128,7 @@ int parse_file(const char *path, name_time_t * result)
 			date_str,
 			a_record->manufacturer,
 			a_record->serial_number,
-			tokens.flight_number_of_the_day,
-			tokens.suffix);
+			tokens.flight_number_of_the_day, tokens.suffix);
 
 	return 1;
 }
@@ -220,10 +220,8 @@ int parse_A_with_three_char_serial_number()
 
 	record = parse_a_record(record, "AFLA1VJ");
 
-	return(
-			strcmp(record->manufacturer, "FLA") == 0
-			&& strcmp(record->serial_number, "1VJ") == 0
-		  );
+	return (strcmp(record->manufacturer, "FLA") == 0
+			&& strcmp(record->serial_number, "1VJ") == 0);
 }
 
 int main(char **argv, int argc)
