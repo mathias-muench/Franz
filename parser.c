@@ -1,18 +1,20 @@
-#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
 #include <libgen.h>
 #include <time.h>
+#include <assert.h>
+
+#include "parser.h"
 
 #define MAX_IGC_RECORD_LEN 79
 
 typedef struct {
-  char *dirname;
-  char *filename;
-  int flight_number_of_the_day;
-  char *suffix;
+	char *dirname;
+	char *filename;
+	int flight_number_of_the_day;
+	char *suffix;
 } path_tokens_t;
 
 static int fnotd_char_to_int(char fnotd)
@@ -40,6 +42,25 @@ static path_tokens_t *split_path(char *path, path_tokens_t * tokens)
 	return tokens;
 }
 
+struct a_record {
+	char manufacturer[4];
+	char serial_number[4];
+};
+
+struct a_record *parse_a_record(struct a_record *record, const char *line) {
+	assert(line[0] == 'A');
+
+	if (strlen(line) < 7) {
+		fprintf(stderr, "file seems not to conform IGC standard!\n");
+		return NULL;
+	}
+
+	strncpy(record->manufacturer, line + 1, 3);
+	strncpy(record->serial_number, line + 4, 3);
+
+	return record;
+}
+
 int parse_file(const char *path, name_time_t * result)
 {
 	FILE *fp = fopen(path, "r");
@@ -59,16 +80,13 @@ int parse_file(const char *path, name_time_t * result)
 		return 0;
 	}
 
-	if (line[0] != 'A' || strlen(line) < 7) {
+	if (line[0] != 'A') {
 		fprintf(stderr, "file seems not to conform IGC standard!\n");
 		return 0;
 	}
 
-	char manufacturer[4] = { 0 };
-	strncpy(manufacturer, line + 1, 3);
-
-	char serial_number[4] = { 0 };
-	strncpy(serial_number, line + 4, 3);
+	struct a_record a_recordS, *a_record = &a_recordS;
+	a_record = parse_a_record(a_record, line);
 
 	char date_str[255];
 
@@ -107,8 +125,10 @@ int parse_file(const char *path, name_time_t * result)
 			"%s/%s-%s-%s-%02d.%s",
 			tokens.dirname,
 			date_str,
-			manufacturer,
-			serial_number, tokens.flight_number_of_the_day, tokens.suffix);
+			a_record->manufacturer,
+			a_record->serial_number,
+			tokens.flight_number_of_the_day,
+			tokens.suffix);
 
 	return 1;
 }
@@ -194,6 +214,18 @@ int split_path_should_return_correct_tokens()
 		&& strcmp(tokens.suffix, "igc") == 0;
 }
 
+int parse_A_with_three_char_serial_number()
+{
+	struct a_record recordS, *record = &recordS;
+
+	record = parse_a_record(record, "AFLA1VJ");
+
+	return(
+			strcmp(record->manufacturer, "FLA") == 0
+			&& strcmp(record->serial_number, "1VJ") == 0
+		  );
+}
+
 int main(char **argv, int argc)
 {
 	run_test(parse_file_should_return_null_on_invalid_path);
@@ -203,6 +235,7 @@ int main(char **argv, int argc)
 	run_test(parse_file_should_return_correct_filename);
 	run_test(parse_file_should_return_correct_time);
 	run_test(split_path_should_return_correct_tokens);
+	run_test(parse_A_with_three_char_serial_number);
 	exit(!test_result());
 }
 #endif
