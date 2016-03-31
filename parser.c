@@ -14,7 +14,6 @@ typedef struct {
 	char *dirname;
 	char *filename;
 	int flight_number_of_the_day;
-	char *suffix;
 } path_tokens_t;
 
 static int fnotd_char_to_int(char fnotd)
@@ -29,7 +28,6 @@ static int fnotd_char_to_int(char fnotd)
 static path_tokens_t *split_path(char *path, path_tokens_t * tokens)
 {
 	char *pos_dot = strrchr(path, '.');
-	tokens->suffix = pos_dot + 1;
 	*pos_dot = '\0';
 
 	tokens->flight_number_of_the_day = fnotd_char_to_int(*(pos_dot - 1));
@@ -151,12 +149,12 @@ int parse_file(const char *path, name_time_t * result)
 	split_path(buffer, &tokens);
 
 	sprintf(result->name,
-			"%s/%s-%s-%s-%02d.%s",
+			"%s/%s-%s-%s-%02d.igc",
 			tokens.dirname,
 			date_str,
 			a_record->manufacturer,
 			a_record->serial_number,
-			tokens.flight_number_of_the_day, tokens.suffix);
+			tokens.flight_number_of_the_day);
 
 	return 1;
 }
@@ -238,8 +236,7 @@ int split_path_should_return_correct_tokens()
 
 	return strcmp(tokens.dirname, "test_igc") == 0
 		&& strcmp(tokens.filename, "58cd1vjC") == 0
-		&& tokens.flight_number_of_the_day == 12
-		&& strcmp(tokens.suffix, "igc") == 0;
+		&& tokens.flight_number_of_the_day == 12;
 }
 
 int parse_a_record_with_three_char_serial_number()

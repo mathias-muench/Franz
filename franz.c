@@ -14,7 +14,6 @@ void doit(char *filename)
 
     parse_file(filename, &result);
     normfile(filename, result.name, result.timestamp);
-    printf("FILE: %s\n", filename);
 }
 
 int main(int argc, char** argv) {

@@ -3,25 +3,32 @@
 #include <stdlib.h>
 #include <time.h>
 #include <utime.h>
+#include <sys/stat.h>
 
 #include "normfile.h"
 
 void normfile (const char *old_filename, const char *new_filename, time_t mtime)
 {
-	struct utimbuf times;
+    struct utimbuf times;
+    struct stat file_stat;
 
-	rename (old_filename, new_filename);
-	if (errno) {
-		perror ("rename");
-		abort();
-	}
-	times.actime = time (NULL);
-	times.modtime = mtime;
-	utime (new_filename, &times);
-	if (errno) {
-		perror ("utime");
-		abort();
-	}
+    if (strcmp(old_filename, new_filename) != 0) {
+        if (stat(new_filename, &file_stat) && errno == ENOENT) {
+            if (rename (old_filename, new_filename)) {
+                perror ("rename");
+                abort();
+            }
+        } else {
+            fprintf(stderr, "rename %s to %s - file exists\n", old_filename, new_filename);
+        }
+    }
+
+    times.actime = time (NULL);
+    times.modtime = mtime;
+    if (utime (new_filename, &times)) {
+        perror ("utime");
+        abort();
+    }
 }
 
 #ifdef UNIT_TEST
@@ -32,12 +39,10 @@ void normfile (const char *old_filename, const char *new_filename, time_t mtime)
 
 int main (int argc, char *argv[])
 {
-#if 0
-	normfile ("test/foo", "test/bar", time (NULL) - 3600);
-#endif
-	exit(0);
+    normfile ("test/foo", "test/bar", time (NULL) - 3600);
+    exit(0);
 }
 #endif
 
-/* vi:ai:ts=4:sw=4
+/* vi:ai:ts=4:sw=4:et
 */
